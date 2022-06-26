@@ -1,0 +1,67 @@
+spring:
+  application:
+    name: ruyuan-eshop-fulfill
+  # 数据源配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ruyuan_eshop_fulfill?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        username: nacos
+        password: nacos
+    sentinel:
+      transport:
+        dashboard: localhost:8080
+        port: 18007
+
+server:
+  port: 8007
+
+dubbo:
+  scan:
+    base-packages: com.ruyuan.eshop.fulfill.api
+  registry:
+    address: spring-cloud://localhost
+  protocol:
+    name: dubbo
+    port: 28087
+  consumer:
+    check: false
+  provider:
+    threads: 800
+    actives: 200
+  cloud:
+    subscribed-services: ruyuan-eshop-fulfill,ruyuan-eshop-order,ruyuan-eshop-wms,ruyuan-eshop-tms
+
+rocketmq:
+  name-server: localhost:9876
+
+#seata配置
+seata:
+  enable-auto-data-source-proxy: false # 如果引入的是seata-spring-boot-starter 请关闭自动代理，需要关闭自动代理
+  application-id: seata-server # Seata应用的名称
+  tx-service-group: ruyuan-eshop-fulfill-group # 事务组
+  service:
+    vgroup-mapping:
+      ruyuan-eshop-fulfill-group: default
+  config:
+    nacos:
+      server-addr: 127.0.0.1:8848 # Nacos服务地址
+      namespace: seata # Seata的NameSpace ID
+      group: SEATA_GROUP
+      username: nacos
+      password: nacos
+  registry:
+    type: nacos # 基于Nacos实现分布式事务管理
+    nacos:
+      server-addr: 127.0.0.1:8848 # Nacos服务地址
+      namespace: seata # Seata的NameSpace ID
+      group: SEATA_GROUP
+      username: nacos
+      password: nacos
+      cluster: default
+      application: seata-server
